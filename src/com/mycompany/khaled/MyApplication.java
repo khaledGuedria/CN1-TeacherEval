@@ -3,7 +3,6 @@ package com.mycompany.khaled;
 import com.codename1.components.ImageViewer;
 import com.codename1.components.SpanLabel;
 import static com.codename1.ui.CN.*;
-import com.codename1.ui.Display;
 import com.codename1.ui.Form;
 import com.codename1.ui.Dialog;
 import com.codename1.ui.Label;
@@ -13,14 +12,13 @@ import com.codename1.io.Log;
 import com.codename1.ui.Toolbar;
 import java.io.IOException;
 import com.codename1.ui.layouts.BoxLayout;
-import com.codename1.io.NetworkEvent;
 import com.codename1.ui.Button;
 import com.codename1.ui.ComboBox;
-import com.codename1.ui.Component;
-import com.codename1.ui.Container;
+import com.codename1.ui.EncodedImage;
+import com.codename1.ui.FontImage;
 import com.codename1.ui.Image;
 import com.codename1.ui.Slider;
-import com.codename1.ui.TextArea;
+import com.codename1.ui.URLImage;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,12 +30,15 @@ public class MyApplication {
 
     //var
     String teacherName = "";
-    String teacherImg = "";
+    String teacherImgURL = "";
     int sliderProgress = 10;
 
     //widgets
     private Form current;
     private Resources theme;
+    EncodedImage enc;
+    Image img;
+    ImageViewer imgV;
 
     public void init(Object context) {
         // use two network threads instead of one
@@ -68,6 +69,14 @@ public class MyApplication {
             return;
         }
 
+        //enc
+        try {
+
+            enc = EncodedImage.create("/load.png");
+
+        } catch (IOException e) {
+        }
+
         //var
         List<String> names = new ArrayList<String>();
         names.add("");
@@ -89,22 +98,29 @@ public class MyApplication {
             if (newSelected != 0) {
                 teacherName = names.get(newSelected);
                 if (newSelected == 1) {
-                    teacherImg = "bassem.jpg";
+                    teacherImgURL = "http://localhost/bassem.jpg";
                 }
                 if (newSelected == 2) {
-                    teacherImg = "nader.jpg";
+                    teacherImgURL = "http://localhost/nader.jpg";
                 }
                 if (newSelected == 3) {
-                    teacherImg = "sana.jpg";
+                    teacherImgURL = "http://localhost/sana.jpg";
                 }
 
                 //..
                 //Form 2
                 Form f2 = new Form(teacherName, BoxLayout.y());
+                f2.getToolbar().addMaterialCommandToLeftBar("", FontImage.MATERIAL_ARROW_BACK, (evt) -> {
+                    f1.showBack();
+                });
 
                 //Components
-                ImageViewer img = new ImageViewer(theme.getImage(teacherImg));
+                //ImageViewer img = new ImageViewer(theme.getImage(teacherImg));
+                //****************************************
+                img = URLImage.createToStorage(enc, teacherImgURL, teacherImgURL, URLImage.RESIZE_SCALE);
+                imgV = new ImageViewer(img);
 
+                //****************************************
                 Label noteLB = new Label("Note : " + sliderProgress);
 
                 Slider slider = new Slider();
@@ -116,7 +132,7 @@ public class MyApplication {
                 slider.setThumbImage(theme.getImage("thumb.png"));
 
                 slider.addDataChangedListener((type, index) -> {
-                    
+
                     sliderProgress = slider.getProgress();
                     noteLB.setText("Note : " + sliderProgress);
                 });
@@ -135,7 +151,7 @@ public class MyApplication {
                 });
 
                 //Show
-                f2.addAll(img, noteLB, slider, submitBtn);
+                f2.addAll(imgV, noteLB, slider, submitBtn);
                 f2.show();
 
             }

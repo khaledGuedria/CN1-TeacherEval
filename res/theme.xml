@@ -2,6 +2,7 @@
 
 <resource majorVersion="1" minorVersion="11" useXmlUI="false">
     <image name="bassem.jpg"  />
+    <image name="load.png"  />
     <image name="nader.jpg"  />
     <image name="sana.jpg"  />
     <theme name="Theme">
